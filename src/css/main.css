@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+25&family=Poppins:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* font-family: 'Jersey 25', sans-serif; */
+  @apply font-poppins;
+  font-optical-sizing: auto;
+}
+
+input {
+  @apply mt-1 block w-full rounded-md border border-gray-300 px-2 py-1 text-sm leading-6 text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600;
+}
+
+.dd-active {
+  @apply bg-orange-50 font-semibold;
+}
+.dd-item {
+  @apply block px-4 py-2 text-sm text-gray-700 hover:bg-orange-100;
+}
+
+.tab {
+  @apply relative flex items-center gap-x-2 rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20;
+}
+
+.tab-active {
+  @apply bg-orange-50 text-orange-600 ring-orange-500 hover:ring-orange-600;
+}

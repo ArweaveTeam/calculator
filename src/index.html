@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arweave profit and hashrate calculator</title>
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+  <body>
+    <div class="bg-white">
+      <header class="absolute inset-x-0 top-0 z-50 m-auto max-w-7xl">
+        <nav class="flex flex-row items-center justify-between p-6 lg:px-8" aria-label="Global">
+          <div class="flex flex-1">
+            <a href="./" class="-m-1.5 p-1.5">
+              <span class="sr-only">Forward Research</span>
+              <img class="h-16 w-auto" src="./images/logo.webp" alt="" />
+            </a>
+          </div>
+          <div class="flex flex-1 justify-end">
+            <a href="https://arweave.org" class="text-sm font-semibold leading-6 text-gray-900"
+              >arweave.org <span aria-hidden="true">&rarr;</span></a
+            >
+          </div>
+        </nav>
+      </header>
+
+      <div class="relative isolate px-6 pt-14 lg:px-8">
+        <div
+          class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+          aria-hidden="true"
+        >
+          <div
+            class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#f3b239] to-[#f9bc2e] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+            style="
+              clip-path: polygon(
+                74.1% 44.1%,
+                100% 61.6%,
+                97.5% 26.9%,
+                85.5% 0.1%,
+                80.7% 2%,
+                72.5% 32.5%,
+                60.2% 62.4%,
+                52.4% 68.1%,
+                47.5% 58.3%,
+                45.2% 34.5%,
+                27.5% 76.7%,
+                0.1% 64.9%,
+                17.9% 100%,
+                27.6% 76.8%,
+                76.1% 97.7%,
+                74.1% 44.1%
+              );
+            "
+          ></div>
+        </div>
+        <div class="mx-auto max-w-2xl pt-20 lg:pt-32">
+          <div class="text-center">
+            <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              Arweave <span class="text-highlight">profit</span> and
+              <span class="text-highlight">hashrate</span> calculator
+            </h1>
+            <p class="mt-6 text-lg leading-8 text-gray-600">
+              Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
+              fugiat veniam occaecat fugiat aliqua.
+            </p>
+            <!-- <div class="mt-10 flex items-center justify-center gap-x-6">
+            <a href="#"
+              class="rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">Get
+              started</a>
+            <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Learn more <span
+                aria-hidden="true">→</span></a>
+          </div> -->
+          </div>
+
+          <div class="m-auto mb-4 flex justify-center gap-x-4 pt-6 sm:mb-8 sm:pt-10">
+            <button class="jsUpdateTab tab">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path
+                  d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V280.4c-17-15.2-39.4-24.4-64-24.4H64c-24.6 0-47 9.2-64 24.4V96zM64 288H448c35.3 0 64 28.7 64 64v64c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V352c0-35.3 28.7-64 64-64zM320 416a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm128-32a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                />
+              </svg>
+              Hard drives
+            </button>
+            <button class="jsUpdateTab tab">
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path
+                  d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"
+                />
+              </svg>
+              Hashrate
+            </button>
+          </div>
+
+          <div
+            class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+            aria-hidden="true"
+          >
+            <div
+              class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ffca80] to-[#f79748] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+              style="
+                clip-path: polygon(
+                  74.1% 44.1%,
+                  100% 61.6%,
+                  97.5% 26.9%,
+                  85.5% 0.1%,
+                  80.7% 2%,
+                  72.5% 32.5%,
+                  60.2% 62.4%,
+                  52.4% 68.1%,
+                  47.5% 58.3%,
+                  45.2% 34.5%,
+                  27.5% 76.7%,
+                  0.1% 64.9%,
+                  17.9% 100%,
+                  27.6% 76.8%,
+                  76.1% 97.7%,
+                  74.1% 44.1%
+                );
+              "
+            ></div>
+          </div>
+        </div>
+
+        <div class="floaty-parent relative mx-auto hidden max-w-5xl">
+          <div>
+            <div class="px-6 py-10 lg:px-8">
+              <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
+                <div id="jsHardDrives" class="flex hidden flex-col gap-y-5">
+                  <div id="jsFirstHd" class="jsRow flex flex-col justify-between gap-4 lg:w-full lg:flex-row">
+                    <div>
+                      <label for="hdd-0" class="block font-semibold leading-6 text-gray-900">Hard&nbsp;drives</label>
+                      <input
+                        type="text"
+                        id="hdd-0"
+                        class="jsHdd"
+                        placeholder="Number of hard drives"
+                        required
+                        min="1"
+                        value="1"
+                      />
+                    </div>
+                    <div>
+                      <label for="capacity-0" class="block text-sm font-semibold leading-6 text-gray-900"
+                        >Capacity&nbsp;(TB)</label
+                      >
+                      <input
+                        type="text"
+                        id="capacity-0"
+                        class="jsCapacity"
+                        min="0"
+                        placeholder="Capacity of hard drive"
+                        required
+                        value="4"
+                      />
+                    </div>
+                    <div class="flex-shrink-0">
+                      <label for="rs-0" class="block text-sm font-semibold leading-6 text-gray-900"
+                        >Read speed (MB/s)</label
+                      >
+                      <input
+                        type="text"
+                        id="rs-0"
+                        class="jsRs"
+                        min="1"
+                        max="200"
+                        placeholder="Read speed of hard drive"
+                        required
+                        value="200"
+                      />
+                    </div>
+
+                    <div class="hidden lg:block lg:pt-7">
+                      <button
+                        type="button"
+                        class="jsRemRow rounded-full bg-gray-200 p-1.5 text-gray-600 opacity-0 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                        disabled
+                      >
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 8.586l3.293-3.293 1.414 1.414L11.414 10l3.293 3.293-1.414 1.414L10 11.414l-3.293 3.293-1.414-1.414L8.586 10 5.293 6.707l1.414-1.414L10 8.586z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-end">
+                    <button
+                      id="jsAddRow"
+                      type="button"
+                      class="rounded-md bg-orange-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                    >
+                      Add another drive
+                    </button>
+                  </div>
+                  <div class="flex flex-col justify-between">
+                    <p class="text-sm font-semibold leading-6 text-gray-900">Total capacity</p>
+                    <div
+                      class="flex flex-row items-end justify-between pb-8 font-bold text-gray-900 md:pb-0 md:text-2xl"
+                    >
+                      <p><span id="jsPartition" class="text-highlight">1</span> Partitions</p>
+                      <p><span id="jsTerabyte" class="text-highlight">4</span> TB</p>
+                      <p>
+                        <span id="jsReadSpeed" class="text-highlight">200</span> of&nbsp;<span id="jsTotalSpeed"
+                          >200</span
+                        >&nbsp;MB/s
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="jsHashrates" class="m-auto flex hidden flex-col gap-y-5">
+                  <div class="flex flex-col justify-between gap-4 lg:w-full lg:flex-row">
+                    <div>
+                      <label for="hashrate" class="block font-semibold leading-6 text-gray-900">Hashrate</label>
+                      <div class="relative mt-2 rounded-md shadow-sm">
+                        <input
+                          type="text"
+                          name="hashrate"
+                          id="hashrate"
+                          value="0.25"
+                          class="jsHashrate px-7 py-1.5 text-xl"
+                          placeholder="0.00"
+                          aria-describedby="hashrate-lbl"
+                        />
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                          <span class="text-gray-500 sm:text-sm" id="hashrate-lbl">h/s</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="jsFloaty floaty relative">
+                  <div class="flex flex-col items-center justify-center gap-y-4 lg:gap-y-5">
+                    <div class="flex w-full justify-end">
+                      <div class="relative inline-block text-left">
+                        <div>
+                          <button
+                            type="button"
+                            class="jsBtnDates inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            aria-expanded="true"
+                            aria-haspopup="true"
+                          >
+                            <span class="jsDateTxt">Per month</span>
+                            <svg
+                              class="-mr-1 h-5 w-5 text-gray-400"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+
+                        <div
+                          class="jsDates absolute right-0 z-10 mt-2 hidden w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none"
+                          role="menu"
+                          tabindex="-1"
+                        >
+                          <div class="py-1" role="none">
+                            <a href="#" class="jsDateItem dd-item" role="menuitem" tabindex="-1">Day</a>
+                            <a href="#" class="jsDateItem dd-item" role="menuitem" tabindex="-1">Week</a>
+                            <a href="#" class="jsDateItem dd-item dd-active" role="menuitem" tabindex="-1">Month</a>
+                            <a href="#" class="jsDateItem dd-item" role="menuitem" tabindex="-1">Year</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col">
+                      <p class="text-xl font-semibold leading-6 text-gray-900">Block reward</p>
+                      <p class="jsReward pt-2 text-5xl font-bold text-highlight lg:pt-4"></p>
+                    </div>
+                    <div class="flex flex-col justify-between gap-x-4 font-bold text-gray-900 lg:flex-row">
+                      <div class="flex gap-x-1">
+                        <span class="jsUsd text-highlight"></span>
+                        <div class="flex">
+                          <div class="relative inline-block text-left">
+                            <div>
+                              <button
+                                type="button"
+                                class="jsBtnFiat inline-flex w-full justify-center gap-x-0.5"
+                                aria-expanded="true"
+                                aria-haspopup="true"
+                              >
+                                <span class="jsFiatTxt">USD</span>
+                                <svg
+                                  class="-mr-1 mt-0.5 h-5 w-5 text-gray-400"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+
+                            <div
+                              class="jsFiat absolute right-0 z-10 mt-2 hidden w-56 origin-top-right rounded-md bg-white font-normal shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                              role="menu"
+                              tabindex="-1"
+                            >
+                              <div class="py-1" role="none">
+                                <a href="#" class="jsFiatItem dd-item dd-active" role="menuitem" tabindex="-1">USD</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">EUR</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">JPY</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">GBP</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">AUD</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">CAD</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">CHF</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">CNH</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">HKD</a>
+                                <a href="#" class="jsFiatItem dd-item" role="menuitem" tabindex="-1">NZD</a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="flex gap-x-1">
+                        <span class="jsMyHs text-highlight"></span>
+                        <span>h/s</span>
+                      </div>
+
+                      <div class="flex gap-x-1">
+                        <span class="jsNetHs text-highlight"></span>
+                        <span>h/s&nbsp;net</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./ts/app.ts"></script>
+  </body>
+</html>
