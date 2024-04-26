@@ -5,27 +5,33 @@ import { $ } from './lib/SimpleQuery'
 import { addWhitespace } from './lib/utils'
 
 export function calculateHdd(arToUsd: number) {
-  const totalHardDrives = $('.jsHdd')
-    .all()
-    .map((el: any) => +el.value.trim())
-    .reduce((acc, val) => acc + val, 0)
-  const totalCapacity = $('.jsCapacity')
-    .all()
-    .map((el: any) => +el.value.trim())
-    .reduce((acc, val) => acc + val, 0)
-  const totalRs = $('.jsRs')
-    .all()
-    .map((el: any) => +el.value.trim())
-    .reduce((acc, val) => acc + val, 0)
-  const finalRs = $('#jsHardDrives').find('.jsRow').length * 200
+  let totalCapacity = 0
+  let totalPartitions = 0
+  let totalRs = 0
+  let readRateRows = $('.jsRs').all() as HTMLInputElement[]
+  for (let i = 0; i < readRateRows.length; i++) {
+    const drives = +($('.jsHdd').get(i) as HTMLInputElement).value.trim()
+    const readRate = +readRateRows[i].value.trim()
+    const capacity = +($('.jsCapacity').get(i) as HTMLInputElement).value.trim()
 
-  $('#jsPartition').html(addWhitespace(totalHardDrives))
+    const drivesXreadSpeed = drives * readRate
+    const rowPartitions = (capacity * drives) / 4
+    const rs = Math.min(drivesXreadSpeed, rowPartitions * 200)
+
+    totalPartitions += rowPartitions
+    totalRs += rs
+    totalCapacity += capacity * drives
+  }
+
+  let finalRs = totalPartitions * 200
+
+  $('#jsPartition').html(addWhitespace(totalPartitions))
   $('#jsTerabyte').html(addWhitespace(totalCapacity))
   $('#jsReadSpeed').html(addWhitespace(totalRs))
   $('#jsTotalSpeed').html(addWhitespace(finalRs))
 
   hashrateRecalcFromHdd({
-    partitionCount: totalHardDrives,
+    partitionCount: totalPartitions,
     arToUsd,
   })
 }
