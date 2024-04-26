@@ -51,6 +51,10 @@ import { $ } from './lib/SimpleQuery'
     jsRemRow.classList.remove('opacity-0')
     jsRemRow.removeAttribute('disabled')
 
+    // remove all the labels
+    const labels = jsFirstHdCopy.querySelectorAll('label')
+    labels.forEach((label) => $(label).addClass(['lg:hidden']))
+
     hdCopy = jsFirstHdCopy.outerHTML
   }
 

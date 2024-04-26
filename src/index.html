@@ -60,7 +60,7 @@
               <span class="text-highlight">hashrate</span> calculator
             </h1>
             <p class="mt-6 text-lg leading-8 text-gray-600">
-              Add your <strong>hard drives</strong> to estimate hashrate and expected mining revenue!<br />
+              Add your <strong>Drives</strong> to estimate hashrate and expected mining revenue!<br />
               Already know your <strong>hashrate</strong>? That works too!<br />
               Check out the
               <a class="link" href="https://docs.arweave.org/developers/mining/mining-guide" target="_blank"
@@ -84,7 +84,7 @@
                   d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V280.4c-17-15.2-39.4-24.4-64-24.4H64c-24.6 0-47 9.2-64 24.4V96zM64 288H448c35.3 0 64 28.7 64 64v64c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V352c0-35.3 28.7-64 64-64zM320 416a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm128-32a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
                 />
               </svg>
-              Hard drives
+              Drives
             </button>
             <button class="jsUpdateTab tab">
               <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -133,12 +133,12 @@
                 <div id="jsHardDrives" class="flex hidden flex-col gap-y-5">
                   <div id="jsFirstHd" class="jsRow flex flex-col justify-between gap-4 lg:w-full lg:flex-row">
                     <div>
-                      <label for="hdd-0" class="block font-semibold leading-6 text-gray-900">Hard&nbsp;drives</label>
+                      <label for="hdd-0" class="block font-semibold leading-6 text-gray-900">Drives</label>
                       <input
                         type="text"
                         id="hdd-0"
                         class="jsHdd"
-                        placeholder="Number of hard drives"
+                        placeholder="Drives quantity"
                         required
                         min="1"
                         value="1"
@@ -146,21 +146,21 @@
                     </div>
                     <div>
                       <label for="capacity-0" class="block text-sm font-semibold leading-6 text-gray-900"
-                        >Capacity&nbsp;(TB)</label
+                        >Capacity</label
                       >
                       <input
                         type="text"
                         id="capacity-0"
                         class="jsCapacity"
                         min="0"
-                        placeholder="Capacity of hard drive"
+                        placeholder="Drive capacity"
                         required
                         value="4"
                       />
                     </div>
-                    <div class="flex-shrink-0">
+                    <div>
                       <label for="rs-0" class="block text-sm font-semibold leading-6 text-gray-900"
-                        >Read speed (MB/s)</label
+                        >Read&nbsp;speed</label
                       >
                       <input
                         type="text"
@@ -168,13 +168,13 @@
                         class="jsRs"
                         min="1"
                         max="200"
-                        placeholder="Read speed of hard drive"
+                        placeholder="Drive's read speed"
                         required
                         value="200"
                       />
                     </div>
 
-                    <div class="hidden lg:block lg:pt-7">
+                    <div class="hidden lg:block lg:pt-1">
                       <button
                         type="button"
                         class="jsRemRow rounded-full bg-gray-200 p-1.5 text-gray-600 opacity-0 hover:bg-gray-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
