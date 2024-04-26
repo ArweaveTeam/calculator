@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Block } from '../faces'
+import { cache } from './cache'
 import { pause, winstonToAr } from './utils'
 
 const client = axios.create({
@@ -29,21 +30,37 @@ class Calculator {
   weaveSizeTb: number = Math.round(180492624503030 * 0.8) / 1024 ** 4
 
   async init() {
-    await this.loadHeight().catch(console.trace)
-    await this.loadBlockList().catch(console.trace)
-    this.loadCurrentBlock().catch(console.trace)
+    await Promise.all([
+      this.loadHeight().catch(console.trace),
+      this.loadBlockList().catch(console.trace),
+      this.loadCurrentBlock().catch(console.trace),
+    ])
   }
 
   async loadHeight() {
-    const res = await client.get('height')
+    const cached = cache.get('block-height')
 
-    this.height = res.data.height
+    if (cached) {
+      this.height = +cached
+    } else {
+      const res = await client.get('height')
+      this.height = +res.data
+
+      cache.set('block-height', this.height.toString(), 2)
+    }
     this.blockDataRefresh(this.height)
   }
 
   async loadBlockList() {
-    const res = await client.get(`metrics`)
-    const data = res.data as string
+    let data: string = ''
+    const cached = cache.get('metrics')
+    if (cached) {
+      data = cached
+    } else {
+      const res = await client.get(`metrics`)
+      data = res.data as string
+      cache.set('metrics', data, 10)
+    }
 
     // split to new lines
     const lines = data.split('\n')
@@ -64,11 +81,19 @@ class Calculator {
   }
 
   async loadCurrentBlock() {
-    const res = await client.get('block/current')
-    const data = res.data
+    let data: { weave_size?: string } = {}
+    const cached = cache.getObj('block-current')
+    if (cached) {
+      data = cached
+    } else {
+      const res = await client.get('block/current')
+      data = res.data
+
+      cache.setObj('block-current', data, 2)
+    }
 
     if (data.weave_size) {
-      this.weaveSize = data.weave_size
+      this.weaveSize = +data.weave_size
     }
 
     await pause(5)
@@ -137,7 +162,6 @@ class Calculator {
   diffToAvgHashCount(diff: number) {
     const maxBn = BigInt(1) << BigInt(256)
     const valueBn = BigInt(diff)
-    const rest = maxBn - valueBn
 
     const passHashCountBn = maxBn - valueBn
     const fullHashCountBn = maxBn
