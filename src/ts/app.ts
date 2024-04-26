@@ -17,11 +17,11 @@ import { $ } from './lib/SimpleQuery'
 
   const arToUsd = async () => {
     let arusd = cache.get('arToUsd')
-    let lastPrice = arusd ? +arusd : 0
+    let lastPrice: number = arusd ? +arusd : 0
     if (!lastPrice) {
-      const res = await axios.get('https://api.binance.com/api/v3/ticker/24hr?symbol=ARUSDT')
-      const data = res.data as { lastPrice: string }
-      lastPrice = +parseFloat(data.lastPrice).toFixed(3)
+      const res = await axios.get('https://api.redstone.finance/prices/?symbol=AR&provider=redstone&limit=1')
+      const data = res.data as { value: number }[]
+      lastPrice = +data[0].value.toFixed(3)
 
       // update every minute
       cache.set('arToUsd', lastPrice.toString(), 1)
