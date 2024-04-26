@@ -28,3 +28,7 @@ input {
 .tab-active {
   @apply bg-orange-50 text-orange-600 ring-orange-500 hover:ring-orange-600;
 }
+
+.link {
+  @apply text-highlight underline-offset-2 hover:text-orange-500 hover:underline;
+}
