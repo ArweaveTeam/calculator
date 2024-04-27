@@ -13,9 +13,6 @@ class Calculator {
   networkHashrate: number = 2303940
   blocksPerDay: number = (24 * 60 * 60) / 129
   statBlockCount: number = 119
-  networkWeaveSize: number = 180492624503030
-  hashrate: number = 2000
-  blockProbPerDay: number = 0
   profitPerDay: number = 0
 
   height: number = 0
@@ -23,16 +20,15 @@ class Calculator {
 
   blockHeightHash: { [height: number]: Block } = {}
 
-  hashCountPerBlockAvg: number = 120 * 70e6
-  weaveSize: number = 60337091813622 // https://arweave.net/block/current
+  weaveSize: number = 181841493532918 // https://arweave.net/block/current
+  networkPartitionCount: number = 50
 
   realBlockTime: number = 120
-  weaveSizeTb: number = Math.round(180492624503030 * 0.8) / 1024 ** 4
-
+  
   async init() {
     await Promise.all([
       this.loadHeight().catch(console.trace),
-      this.loadBlockList().catch(console.trace),
+      this.loadMetrics().catch(console.trace),
       this.loadCurrentBlock().catch(console.trace),
     ])
   }
@@ -51,7 +47,7 @@ class Calculator {
     this.blockDataRefresh(this.height)
   }
 
-  async loadBlockList() {
+  async loadMetrics() {
     let data: string = ''
     const cached = cache.get('metrics')
     if (cached) {
@@ -76,8 +72,6 @@ class Calculator {
     }
 
     this.blockReward = winstonToAr(+metrics['average_block_reward'])
-    this.networkWeaveSize = +metrics['weave_size']
-    this.weaveSizeTb = Math.round(this.networkWeaveSize * 0.8) / 1024 ** 4
   }
 
   async loadCurrentBlock() {
@@ -94,27 +88,48 @@ class Calculator {
 
     if (data.weave_size) {
       this.weaveSize = +data.weave_size
+      this.networkPartitionCount = Math.floor(this.weaveSize / 3.6e12)
     }
 
     await pause(5)
     this.loadCurrentBlock()
   }
 
-  hashrateRelatedRecalc() {
-    const hashCountPerBlockAvg = (24 * 60 * 60 * this.networkHashrate) / this.blocksPerDay
-    const pPerHash = 1 / hashCountPerBlockAvg
-    this.blockProbPerDay = 1 - Math.pow(1 - pPerHash, 24 * 60 * 60 * this.hashrate)
+  hashrate(partitionCount: number, readSpeed: number) {
+    const requiredReadSoeed = partitionCount * 200
+    const fullReplicaCountFloat = partitionCount / calculator.networkPartitionCount
+    const fullReplicaCount = Math.floor(fullReplicaCountFloat)
+    const partialReplicaCount = fullReplicaCountFloat - fullReplicaCount
+    const readRate = Math.min(1.0, readSpeed / requiredReadSoeed)
 
-    return this.economicsRecalc()
+    // Scale the hashrate down by the read rate to estimate the impact of not being able
+    // to read the chunk data fast enough to achieve full hashrate
+    const hashrate =
+      (calculator.fullReplicaHashrate(fullReplicaCount) +
+      calculator.partialReplicaHashrate(partialReplicaCount)) *
+      readRate
+  
+    return hashrate
   }
 
-  economicsRecalc() {
-    const rate = this.hashrate / this.networkHashrate
+  fullReplicaHashrate(fullReplicaCount: number) {
+    // Constant. Estimate of the fraction of the weave that can be synced and mined
+    const USABLE_FRACTION_OF_WEAVE = 0.8
+    return (4 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE +
+      400 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE * USABLE_FRACTION_OF_WEAVE) *
+      fullReplicaCount
+  }
+
+  partialReplicaHashrate(partialReplicaCount: number) {
+    return (4 * this.networkPartitionCount * partialReplicaCount +
+      400 * this.networkPartitionCount * partialReplicaCount * partialReplicaCount)
+  }
+
+  economicsRecalc(hashrate: number) {
+    const rate = hashrate / this.networkHashrate
     this.profitPerDay = rate * this.blockReward * this.blocksPerDay
 
     return {
-      hashrate: this.hashrate,
-      network_hashrate: this.networkHashrate,
       profit_per_day: this.profitPerDay,
     }
   }
@@ -151,11 +166,7 @@ class Calculator {
       net_hashrate_v1 /= count
 
       this.networkHashrate = Math.round(netHashrate)
-      this.weaveSize = block.weave_size
-      this.hashCountPerBlockAvg = hash_count_sum / count
       this.realBlockTime = real_block_time_sum / count
-
-      this.hashrateRelatedRecalc()
     }
   }
 
