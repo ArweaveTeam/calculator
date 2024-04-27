@@ -39,10 +39,6 @@ export function calculateHdd(arToUsd: number) {
 
 async function hashrateRecalcFromHdd(
     data: { partitionCount: number; readSpeed: number; arToUsd: number }) {
-  const fullReplicaCountFloat = data.partitionCount / calculator.networkPartitionCount
-  const fullReplicaCount = Math.floor(fullReplicaCountFloat)
-  const partialReplicaCount = fullReplicaCountFloat - fullReplicaCount
-
   const hashrate = calculator.hashrate(data.partitionCount, data.readSpeed)
 
   const res = calculator.economicsRecalc(hashrate)
