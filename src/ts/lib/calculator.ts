@@ -11,47 +11,20 @@ const client = axios.create({
 class Calculator {
   blockReward: number = 0.73
   networkHashrate: number = 2303940
-  blocksPerDay: number = (24 * 60 * 60) / 129
-  statBlockCount: number = 119
-  networkWeaveSize: number = 180492624503030
-  hashrate: number = 2000
-  blockProbPerDay: number = 0
+  blockTime: number = 129
+  blocksPerDay: number = (24 * 60 * 60) / this.blockTime
   profitPerDay: number = 0
-
-  height: number = 0
-  blockRewardCount: number = 0
-
-  blockHeightHash: { [height: number]: Block } = {}
-
-  hashCountPerBlockAvg: number = 120 * 70e6
-  weaveSize: number = 60337091813622 // https://arweave.net/block/current
-
-  realBlockTime: number = 120
-  weaveSizeTb: number = Math.round(180492624503030 * 0.8) / 1024 ** 4
+  weaveSize: number = 181841493532918 // https://arweave.net/block/current
+  networkPartitionCount: number = 50
 
   async init() {
     await Promise.all([
-      this.loadHeight().catch(console.trace),
-      this.loadBlockList().catch(console.trace),
+      this.loadMetrics().catch(console.trace),
       this.loadCurrentBlock().catch(console.trace),
     ])
   }
 
-  async loadHeight() {
-    const cached = cache.get('block-height')
-
-    if (cached) {
-      this.height = +cached
-    } else {
-      const res = await client.get('height')
-      this.height = +res.data
-
-      cache.set('block-height', this.height.toString(), 2)
-    }
-    this.blockDataRefresh(this.height)
-  }
-
-  async loadBlockList() {
+  async loadMetrics() {
     let data: string = ''
     const cached = cache.get('metrics')
     if (cached) {
@@ -76,8 +49,7 @@ class Calculator {
     }
 
     this.blockReward = winstonToAr(+metrics['average_block_reward'])
-    this.networkWeaveSize = +metrics['weave_size']
-    this.weaveSizeTb = Math.round(this.networkWeaveSize * 0.8) / 1024 ** 4
+    this.networkHashrate = +metrics['network_hashrate'] / this.blockTime
   }
 
   async loadCurrentBlock() {
@@ -94,80 +66,56 @@ class Calculator {
 
     if (data.weave_size) {
       this.weaveSize = +data.weave_size
+      this.networkPartitionCount = Math.floor(this.weaveSize / 3.6e12)
     }
 
     await pause(5)
     this.loadCurrentBlock()
   }
 
-  hashrateRelatedRecalc() {
-    const hashCountPerBlockAvg = (24 * 60 * 60 * this.networkHashrate) / this.blocksPerDay
-    const pPerHash = 1 / hashCountPerBlockAvg
-    this.blockProbPerDay = 1 - Math.pow(1 - pPerHash, 24 * 60 * 60 * this.hashrate)
+  hashrate(partitionCount: number, readSpeed: number) {
+    const requiredReadSoeed = partitionCount * 200
+    const fullReplicaCountFloat = partitionCount / calculator.networkPartitionCount
+    const fullReplicaCount = Math.floor(fullReplicaCountFloat)
+    const partialReplicaCount = fullReplicaCountFloat - fullReplicaCount
+    const readRate = Math.min(1.0, readSpeed / requiredReadSoeed)
 
-    return this.economicsRecalc()
+    // Scale the hashrate down by the read rate to estimate the impact of not being able
+    // to read the chunk data fast enough to achieve full hashrate
+    const hashrate =
+      (calculator.fullReplicaHashrate(fullReplicaCount) +
+      calculator.partialReplicaHashrate(partialReplicaCount)) *
+      readRate
+  
+    return hashrate
   }
 
-  economicsRecalc() {
-    const rate = this.hashrate / this.networkHashrate
+  fullReplicaHashrate(fullReplicaCount: number) {
+    // Constant. Estimate of the fraction of the weave that can be synced and mined
+    const USABLE_FRACTION_OF_WEAVE = 0.87
+    // Each H1 hash is worth 1/100 of an H2 hash. This is because the SPoA1 difficulty is
+    // 100x the SPoA2 difficulty - i.e. each H1 hash has a 1/100 chance of being a solution
+    // compared to each H2 hash
+    return (4 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE +
+      400 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE * USABLE_FRACTION_OF_WEAVE) *
+      fullReplicaCount
+  }
+
+  partialReplicaHashrate(partialReplicaCount: number) {
+    // Each H1 hash is worth 1/100 of an H2 hash. This is because the SPoA1 difficulty is
+    // 100x the SPoA2 difficulty - i.e. each H1 hash has a 1/100 chance of being a solution
+    // compared to each H2 hash
+    return (4 * this.networkPartitionCount * partialReplicaCount +
+      400 * this.networkPartitionCount * partialReplicaCount * partialReplicaCount)
+  }
+
+  economicsRecalc(hashrate: number) {
+    const rate = hashrate / this.networkHashrate
     this.profitPerDay = rate * this.blockReward * this.blocksPerDay
 
     return {
-      hashrate: this.hashrate,
-      network_hashrate: this.networkHashrate,
       profit_per_day: this.profitPerDay,
     }
-  }
-
-  blockDataRefresh(height: number = this.height) {
-    let block: Block | undefined
-
-    for (let i = 0; i < 100; i++) {
-      block = this.blockHeightHash[height - i]
-      if (block) {
-        break
-      }
-    }
-
-    if (block) {
-      let net_hashrate_v1 = 0
-      let count = 0
-      let prev_block: Block | null = null
-      let real_block_time_sum = 0
-      let hash_count_sum = 0
-      for (const k in this.blockHeightHash) {
-        const block = this.blockHeightHash[k]
-        if (prev_block) {
-          const real_block_time = block.timestamp - prev_block.timestamp
-          const hash_count = this.diffToAvgHashCount(block.diff)
-          hash_count_sum += hash_count
-          real_block_time_sum += real_block_time
-          net_hashrate_v1 += hash_count / block.timestamp // Need to adjust for block_time
-          count++
-        }
-        prev_block = block
-      }
-      const netHashrate = hash_count_sum / real_block_time_sum
-      net_hashrate_v1 /= count
-
-      this.networkHashrate = Math.round(netHashrate)
-      this.weaveSize = block.weave_size
-      this.hashCountPerBlockAvg = hash_count_sum / count
-      this.realBlockTime = real_block_time_sum / count
-
-      this.hashrateRelatedRecalc()
-    }
-  }
-
-  diffToAvgHashCount(diff: number) {
-    const maxBn = BigInt(1) << BigInt(256)
-    const valueBn = BigInt(diff)
-
-    const passHashCountBn = maxBn - valueBn
-    const fullHashCountBn = maxBn
-    const avgHashCount = +fullHashCountBn.toString() / +passHashCountBn.toString()
-
-    return avgHashCount
   }
 }
 
