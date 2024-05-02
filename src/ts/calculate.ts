@@ -37,8 +37,7 @@ export function calculateHdd(arToUsd: number) {
   })
 }
 
-async function hashrateRecalcFromHdd(
-    data: { partitionCount: number; readSpeed: number; arToUsd: number }) {
+async function hashrateRecalcFromHdd(data: { partitionCount: number; readSpeed: number; arToUsd: number }) {
   const hashrate = calculator.hashrate(data.partitionCount, data.readSpeed)
 
   const res = calculator.economicsRecalc(hashrate)

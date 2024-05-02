@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Block } from '../faces'
 import { cache } from './cache'
 import { pause, winstonToAr } from './utils'
 
@@ -18,10 +17,7 @@ class Calculator {
   networkPartitionCount: number = 50
 
   async init() {
-    await Promise.all([
-      this.loadMetrics().catch(console.trace),
-      this.loadCurrentBlock().catch(console.trace),
-    ])
+    await Promise.all([this.loadMetrics().catch(console.trace), this.loadCurrentBlock().catch(console.trace)])
   }
 
   async loadMetrics() {
@@ -83,10 +79,9 @@ class Calculator {
     // Scale the hashrate down by the read rate to estimate the impact of not being able
     // to read the chunk data fast enough to achieve full hashrate
     const hashrate =
-      (calculator.fullReplicaHashrate(fullReplicaCount) +
-      calculator.partialReplicaHashrate(partialReplicaCount)) *
+      (calculator.fullReplicaHashrate(fullReplicaCount) + calculator.partialReplicaHashrate(partialReplicaCount)) *
       readRate
-  
+
     return hashrate
   }
 
@@ -96,17 +91,21 @@ class Calculator {
     // Each H1 hash is worth 1/100 of an H2 hash. This is because the SPoA1 difficulty is
     // 100x the SPoA2 difficulty - i.e. each H1 hash has a 1/100 chance of being a solution
     // compared to each H2 hash
-    return (4 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE +
-      400 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE * USABLE_FRACTION_OF_WEAVE) *
+    return (
+      (4 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE +
+        400 * this.networkPartitionCount * USABLE_FRACTION_OF_WEAVE * USABLE_FRACTION_OF_WEAVE) *
       fullReplicaCount
+    )
   }
 
   partialReplicaHashrate(partialReplicaCount: number) {
     // Each H1 hash is worth 1/100 of an H2 hash. This is because the SPoA1 difficulty is
     // 100x the SPoA2 difficulty - i.e. each H1 hash has a 1/100 chance of being a solution
     // compared to each H2 hash
-    return (4 * this.networkPartitionCount * partialReplicaCount +
-      400 * this.networkPartitionCount * partialReplicaCount * partialReplicaCount)
+    return (
+      4 * this.networkPartitionCount * partialReplicaCount +
+      400 * this.networkPartitionCount * partialReplicaCount * partialReplicaCount
+    )
   }
 
   economicsRecalc(hashrate: number) {
